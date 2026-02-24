@@ -1,0 +1,63 @@
+# =========================
+# Unity generated folders
+# =========================
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+
+# Uncomment if you have a separate build output folder
+Build_Web/
+
+# Memory captures / profiling
+MemoryCaptures/
+
+# Asset import pipeline / cache
+# (Library配下なので通常は不要だが、明示してもOK)
+# GI Cache is usually outside project; kept here as note.
+
+# =========================
+# Visual Studio / VSCode / Rider
+# =========================
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Keep your .slnx if you're using it
+!*.slnx
+
+# VS Code local settings (team共有しない方が無難)
+.vscode/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Unity Addressables / generated (optional)
+# =========================
+# Uncomment if these are generated in your workflow
+# Assets/AddressableAssetsData/*.bin*
+# Assets/StreamingAssets/aa.meta
+# Assets/StreamingAssets/aa/
