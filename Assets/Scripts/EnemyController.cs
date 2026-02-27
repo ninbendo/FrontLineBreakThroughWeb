@@ -18,13 +18,4 @@ public sealed class EnemyController : MonoBehaviour
         }
     }
 
-    // private void OnTriggerEnter(Collider other)
-    // {
-    //     // 弾に当たったら両方消す
-    //     if (other.GetComponent<BulletController>() != null)
-    //     {
-    //         Destroy(other.gameObject); // 弾
-    //         Destroy(gameObject);       // 敵
-    //     }
-    // }
 }
