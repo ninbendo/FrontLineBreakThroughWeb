@@ -16,10 +16,16 @@ public class PlayerShooter : MonoBehaviour
         if (bulletPrefab == null || muzzle == null) return;
 
         _timer += Time.deltaTime;
-        if (_timer >= fireInterval)
+
+        // 1フレームで複数発ぶん溜まっていたら追いつく（低FPS/ヒッチ対策）
+        int safety = 0;
+        const int maxShotsPerFrame = 5; // ヒッチ時の弾幕暴発を防ぐ上限（3〜5推奨）
+
+        while (_timer >= fireInterval && safety < maxShotsPerFrame)
         {
             _timer -= fireInterval;
             Shoot();
+            safety++;
         }
     }
 
