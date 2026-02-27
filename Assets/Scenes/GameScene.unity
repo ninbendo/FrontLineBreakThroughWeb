@@ -638,7 +638,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShooter
   muzzle: {fileID: 1267020887}
   bulletPrefab: {fileID: 7196014178992622831, guid: 302350a0f1ac0ff4bbe091b99f8679ef, type: 3}
-  fireInterval: 1
+  fireInterval: 0.25
 --- !u!1 &806383080
 GameObject:
   m_ObjectHideFlags: 0
