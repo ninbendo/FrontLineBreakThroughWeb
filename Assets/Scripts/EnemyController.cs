@@ -7,8 +7,27 @@ public sealed class EnemyController : MonoBehaviour
 
     private float _life;
 
+    public bool IsDead { get; private set; }
+
+    public bool TryKill()
+    {
+        if (IsDead) return false;
+
+        IsDead = true;
+
+        var col = GetComponent<Collider>();
+        if (col != null)
+        {
+            col.enabled = false;
+        }
+
+        return true;
+    }
+
     private void Update()
     {
+        if (IsDead) return;
+
         transform.position += Vector3.down * (speed * Time.deltaTime);
 
         _life += Time.deltaTime;

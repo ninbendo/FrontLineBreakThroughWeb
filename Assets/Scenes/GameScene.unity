@@ -574,7 +574,7 @@ GameObject:
   - component: {fileID: 774592925}
   - component: {fileID: 774592926}
   - component: {fileID: 774592927}
-  m_Layer: 13
+  m_Layer: 10
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -912,7 +912,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1267020887}
-  m_Layer: 13
+  m_Layer: 10
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1023,7 +1023,7 @@ GameObject:
   - component: {fileID: 1657722802}
   - component: {fileID: 1657722801}
   - component: {fileID: 1657722800}
-  m_Layer: 13
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}

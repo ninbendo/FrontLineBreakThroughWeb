@@ -47,8 +47,11 @@ public class BulletController : MonoBehaviour
         var enemy = other.GetComponentInParent<EnemyController>();
         if (enemy != null)
         {
-            ScoreManager.Add(1);
-            Destroy(enemy.gameObject);
+            if (enemy.TryKill())
+            {
+                ScoreManager.Add(1);
+                Destroy(enemy.gameObject);
+            }
         }
         else
         {
