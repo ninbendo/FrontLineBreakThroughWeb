@@ -7,8 +7,8 @@ public class PlayerGroupController : MonoBehaviour
     [SerializeField] private float sideSpeed = 5.0f;
 
     [Header("X Clamp")]
-    [SerializeField] private float minX = -2.5f;
-    [SerializeField] private float maxX = 2.5f;
+    [SerializeField] private float minX = -5.0f;
+    [SerializeField] private float maxX = 5.0f;
 
     private void Update()
     {
