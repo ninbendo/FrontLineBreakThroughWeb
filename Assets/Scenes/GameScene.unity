@@ -401,7 +401,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &462498379
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -623,8 +623,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sideSpeed: 5
-  minX: -2.5
-  maxX: 2.5
+  minX: -5
+  maxX: 5
 --- !u!114 &774592927
 MonoBehaviour:
   m_ObjectHideFlags: 0
