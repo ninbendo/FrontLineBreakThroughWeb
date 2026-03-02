@@ -605,11 +605,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 774592923}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08605a9670b16944a89c2226ff3d1cb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mouseDragSensitivity: 0.02
+  touchDragSensitivity: 0.02
+  enableDebugLog: 0
 --- !u!114 &774592926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -622,9 +625,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c66872e2ff66144c9e9c6a5282052e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sideSpeed: 5
+  sideSpeed: 90
   minX: -5
   maxX: 5
+  inputAdapter: {fileID: 0}
 --- !u!114 &774592927
 MonoBehaviour:
   m_ObjectHideFlags: 0

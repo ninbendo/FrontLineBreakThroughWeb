@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerGroupController : MonoBehaviour
 {
@@ -10,29 +9,32 @@ public class PlayerGroupController : MonoBehaviour
     [SerializeField] private float minX = -5.0f;
     [SerializeField] private float maxX = 5.0f;
 
+    [Header("References")]
+    [SerializeField] private PlayerInputAdapter inputAdapter;
+
+    private void Awake()
+    {
+        if (inputAdapter == null)
+        {
+            inputAdapter = GetComponent<PlayerInputAdapter>();
+        }
+    }
+
     private void Update()
     {
         float dt = Time.deltaTime;
 
-        // 現在位置を取得
         Vector3 pos = transform.position;
 
-        // 左右入力（新Input System）
         float xInput = 0f;
-        var keyboard = Keyboard.current;
-        if (keyboard != null)
+        if (inputAdapter != null)
         {
-            if (keyboard.leftArrowKey.isPressed)  xInput -= 1f;
-            if (keyboard.rightArrowKey.isPressed) xInput += 1f;
+            xInput = inputAdapter.CurrentHorizontal;
         }
 
-        // 左右移動のみ
         pos.x += xInput * sideSpeed * dt;
-
-        // X範囲クランプ
         pos.x = Mathf.Clamp(pos.x, minX, maxX);
 
-        // Yは固定のまま反映
         transform.position = pos;
     }
 }
