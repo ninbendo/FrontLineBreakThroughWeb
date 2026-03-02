@@ -40,7 +40,7 @@ public class BarrelController : MonoBehaviour
         if (isBroken) return;
 
         currentHp -= amount;
-    Debug.Log($"[BarrelController] Damage taken. currentHp={currentHp}");
+        Debug.Log($"[BarrelController] Damage taken. currentHp={currentHp}");
 
         if (currentHp <= 0)
         {
@@ -59,7 +59,7 @@ public class BarrelController : MonoBehaviour
         if (isBroken) return;
         isBroken = true;
 
-    Debug.Log("[BarrelController] Barrel broken.");
+        Debug.Log("[BarrelController] Barrel broken.");
 
         if (dropPrefab != null)
         {
