@@ -30,6 +30,7 @@ public class BarrelController : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
+            Debug.Log($"[BarrelController] Player hit barrel: {other.name}");
             HandlePlayerHit();
             BreakBarrel();
         }
@@ -50,8 +51,11 @@ public class BarrelController : MonoBehaviour
 
     private void HandlePlayerHit()
     {
-        // Day6では仮実装
-        Debug.Log("[BarrelController] Player hit barrel: decrease player count by 1");
+        // TODO Day6.5:
+        // Player接触自体は確認済み（other.name = Body）。
+        // ただし、Player人数を管理する責務クラスが未確定のため、
+        // 現時点では本当の人数減少処理は未実装。
+        Debug.Log("[BarrelController] Player hit barrel: decrease player count by 1 (stub)");
     }
 
     private void BreakBarrel()
