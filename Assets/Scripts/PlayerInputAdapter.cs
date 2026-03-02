@@ -11,10 +11,12 @@ public class PlayerInputAdapter : MonoBehaviour
     [SerializeField] private bool enableDebugLog = false;
 
     public float CurrentHorizontal { get; private set; }
+    public bool IsPointerInput { get; private set; }
 
     private void Update()
     {
         CurrentHorizontal = 0f;
+        IsPointerInput = false;
 
         bool usedPointerInput = false;
 
@@ -26,6 +28,7 @@ public class PlayerInputAdapter : MonoBehaviour
             if (Mathf.Abs(dx) > 0.01f)
             {
                 CurrentHorizontal = Mathf.Clamp(dx * touchDragSensitivity, -1f, 1f);
+                IsPointerInput = true;
                 usedPointerInput = true;
             }
         }
@@ -40,6 +43,7 @@ public class PlayerInputAdapter : MonoBehaviour
                 if (Mathf.Abs(dx) > 0.01f)
                 {
                     CurrentHorizontal = Mathf.Clamp(dx * mouseDragSensitivity, -1f, 1f);
+                    IsPointerInput = true;
                     usedPointerInput = true;
                 }
             }
@@ -67,7 +71,7 @@ public class PlayerInputAdapter : MonoBehaviour
 
         if (enableDebugLog && Mathf.Abs(CurrentHorizontal) > 0.01f)
         {
-            Debug.Log($"[PlayerInputAdapter] CurrentHorizontal = {CurrentHorizontal:F2}");
+            Debug.Log($"[PlayerInputAdapter] CurrentHorizontal = {CurrentHorizontal:F2}, IsPointerInput = {IsPointerInput}");
         }
     }
 }

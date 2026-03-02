@@ -23,18 +23,27 @@ public class PlayerGroupController : MonoBehaviour
     private void Update()
     {
         float dt = Time.deltaTime;
-
         Vector3 pos = transform.position;
 
         float xInput = 0f;
+        bool isPointerInput = false;
+
         if (inputAdapter != null)
         {
             xInput = inputAdapter.CurrentHorizontal;
+            isPointerInput = inputAdapter.IsPointerInput;
         }
 
-        pos.x += xInput * sideSpeed * dt;
-        pos.x = Mathf.Clamp(pos.x, minX, maxX);
+        if (isPointerInput)
+        {
+            pos.x += xInput * sideSpeed;
+        }
+        else
+        {
+            pos.x += xInput * sideSpeed * dt;
+        }
 
+        pos.x = Mathf.Clamp(pos.x, minX, maxX);
         transform.position = pos;
     }
 }
