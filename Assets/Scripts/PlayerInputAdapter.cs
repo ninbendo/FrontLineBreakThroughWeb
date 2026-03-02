@@ -3,29 +3,75 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputAdapter : MonoBehaviour
 {
+    [Header("Drag Sensitivity")]
+    [SerializeField] private float mouseDragSensitivity = 0.02f;
+    [SerializeField] private float touchDragSensitivity = 0.02f;
+
+    [Header("Debug")]
+    [SerializeField] private bool enableDebugLog = false;
+
+    public float CurrentHorizontal { get; private set; }
+    public bool IsPointerInput { get; private set; }
+
     private void Update()
     {
-        // 動いている確認（2秒ごと）
-        if (Time.frameCount % 120 == 0)
+        CurrentHorizontal = 0f;
+        IsPointerInput = false;
+
+        bool usedPointerInput = false;
+
+        // スマホ：タッチドラッグ
+        var touchscreen = Touchscreen.current;
+        if (touchscreen != null && touchscreen.primaryTouch.press.isPressed)
         {
-            Debug.Log("[PlayerInputAdapter] Update running");
+            float dx = touchscreen.primaryTouch.delta.ReadValue().x;
+            if (Mathf.Abs(dx) > 0.01f)
+            {
+                CurrentHorizontal = Mathf.Clamp(dx * touchDragSensitivity, -1f, 1f);
+                IsPointerInput = true;
+                usedPointerInput = true;
+            }
         }
 
-        // キーボードが取れない環境対策
-        if (Keyboard.current == null)
+        // PC：マウスドラッグ
+        if (!usedPointerInput)
         {
-            return;
+            var mouse = Mouse.current;
+            if (mouse != null && mouse.leftButton.isPressed)
+            {
+                float dx = mouse.delta.ReadValue().x;
+                if (Mathf.Abs(dx) > 0.01f)
+                {
+                    CurrentHorizontal = Mathf.Clamp(dx * mouseDragSensitivity, -1f, 1f);
+                    IsPointerInput = true;
+                    usedPointerInput = true;
+                }
+            }
         }
 
-        // 押した瞬間だけログ（連打を防いで見やすくする）
-        if (Keyboard.current.aKey.wasPressedThisFrame || Keyboard.current.leftArrowKey.wasPressedThisFrame)
+        // 保険：キーボード左右（MVP確認用）
+        if (!usedPointerInput)
         {
-            Debug.Log("[PlayerInputAdapter] LEFT pressed");
+            var keyboard = Keyboard.current;
+            if (keyboard != null)
+            {
+                if (keyboard.leftArrowKey.isPressed || keyboard.aKey.isPressed)
+                {
+                    CurrentHorizontal -= 1f;
+                }
+
+                if (keyboard.rightArrowKey.isPressed || keyboard.dKey.isPressed)
+                {
+                    CurrentHorizontal += 1f;
+                }
+
+                CurrentHorizontal = Mathf.Clamp(CurrentHorizontal, -1f, 1f);
+            }
         }
 
-        if (Keyboard.current.dKey.wasPressedThisFrame || Keyboard.current.rightArrowKey.wasPressedThisFrame)
+        if (enableDebugLog && Mathf.Abs(CurrentHorizontal) > 0.01f)
         {
-            Debug.Log("[PlayerInputAdapter] RIGHT pressed");
+            Debug.Log($"[PlayerInputAdapter] CurrentHorizontal = {CurrentHorizontal:F2}, IsPointerInput = {IsPointerInput}");
         }
     }
 }
