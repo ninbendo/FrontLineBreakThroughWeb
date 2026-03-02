@@ -4,12 +4,11 @@ using UnityEngine.InputSystem;
 public class PlayerInputAdapter : MonoBehaviour
 {
     [Header("Drag Sensitivity")]
-    [SerializeField] private float mouseDragSensitivity = 0.50f;
+    [SerializeField] private float mouseDragSensitivity = 0.02f;
     [SerializeField] private float touchDragSensitivity = 0.02f;
 
     [Header("Debug")]
-    // [SerializeField] private bool enableDebugLog = false;
-    [SerializeField] private bool enableDebugLog = true;
+    [SerializeField] private bool enableDebugLog = false;
 
     public float CurrentHorizontal { get; private set; }
 
