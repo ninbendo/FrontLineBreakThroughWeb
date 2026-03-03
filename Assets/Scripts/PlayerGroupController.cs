@@ -12,6 +12,18 @@ public class PlayerGroupController : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerInputAdapter inputAdapter;
 
+    [SerializeField] private int weaponLevel = 1;
+    [SerializeField] private int maxWeaponLevel = 5;
+
+    public int WeaponLevel => weaponLevel;
+
+    public void UpgradeWeaponLevel()
+    {
+        int oldLevel = weaponLevel;
+        weaponLevel = Mathf.Clamp(weaponLevel + 1, 1, maxWeaponLevel);
+        Debug.Log($"[PlayerGroupController] Weapon level up: {oldLevel} -> {weaponLevel}");
+    }
+
     private void Awake()
     {
         if (inputAdapter == null)

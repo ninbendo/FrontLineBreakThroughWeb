@@ -629,6 +629,8 @@ MonoBehaviour:
   minX: -5
   maxX: 5
   inputAdapter: {fileID: 0}
+  weaponLevel: 1
+  maxWeaponLevel: 5
 --- !u!114 &774592927
 MonoBehaviour:
   m_ObjectHideFlags: 0

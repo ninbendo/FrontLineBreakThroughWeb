@@ -61,6 +61,17 @@ public class BarrelController : MonoBehaviour
 
         Debug.Log("[BarrelController] Barrel broken.");
 
+        var playerGroup = FindPlayerGroup();
+        if (playerGroup != null)
+        {
+            playerGroup.UpgradeWeaponLevel();
+            Debug.Log("[BarrelController] Applied weapon upgrade directly on break.");
+        }
+        else
+        {
+            Debug.LogWarning("[BarrelController] PlayerGroupController not found.");
+        }
+
         if (dropPrefab != null)
         {
             Vector3 spawnPos = dropSpawnPoint != null
@@ -71,5 +82,10 @@ public class BarrelController : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    private PlayerGroupController FindPlayerGroup()
+    {
+        return FindFirstObjectByType<PlayerGroupController>();
     }
 }
