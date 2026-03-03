@@ -20,30 +20,4 @@ public class DropItemController : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    private bool _isCollected = false;
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (_isCollected) return;
-
-        Debug.Log($"[DropItemController] Trigger enter: {other.name}");
-
-        if (!other.CompareTag("Player")) return;
-
-        var player = other.GetComponentInParent<PlayerGroupController>();
-        if (player == null)
-        {
-            Debug.LogWarning("[DropItemController] PlayerGroupController not found in parent.");
-            return;
-        }
-
-        _isCollected = true;
-
-        player.UpgradeWeaponLevel();
-
-        Debug.Log("[DropItemController] Collected and applied weapon upgrade.");
-
-        Destroy(gameObject);
-    }
 }
