@@ -22,6 +22,11 @@ public sealed class SpikeController : MonoBehaviour
         }
 
         Debug.Log("[SpikeController] Player hit Spike");
-        gameManager.SetGameOver();
+
+        var playerGroup = other.GetComponentInParent<PlayerGroupController>();
+        if (playerGroup != null)
+        {
+            playerGroup.TakeDamage(1);
+        }
     }
 }
