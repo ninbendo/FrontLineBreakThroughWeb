@@ -15,7 +15,14 @@ public class PlayerGroupController : MonoBehaviour
     [SerializeField] private int weaponLevel = 1;
     [SerializeField] private int maxWeaponLevel = 5;
 
+    [Header("Temporary HP")]
+    [SerializeField] private int maxHp = 2;
+
+    private int currentHp;
+    private GameManager gameManager;
+
     public int WeaponLevel => weaponLevel;
+    public int CurrentHp => currentHp;
 
     public void UpgradeWeaponLevel()
     {
@@ -24,12 +31,34 @@ public class PlayerGroupController : MonoBehaviour
         Debug.Log($"[PlayerGroupController] Weapon level up: {oldLevel} -> {weaponLevel}");
     }
 
+    public void TakeDamage(int amount)
+    {
+        if (amount <= 0) return;
+        if (currentHp <= 0) return;
+
+        int oldHp = currentHp;
+        currentHp = Mathf.Max(0, currentHp - amount);
+
+        Debug.Log($"[PlayerGroupController] Damage taken: {oldHp} -> {currentHp}");
+
+        if (currentHp <= 0)
+        {
+            Debug.Log("[PlayerGroupController] Player group HP reached 0. GameOver.");
+            if (gameManager != null)
+            {
+                gameManager.SetGameOver();
+            }
+        }
+    }
     private void Awake()
     {
         if (inputAdapter == null)
         {
             inputAdapter = GetComponent<PlayerInputAdapter>();
         }
+
+        currentHp = maxHp;
+        gameManager = FindFirstObjectByType<GameManager>();
     }
 
     private void Update()
