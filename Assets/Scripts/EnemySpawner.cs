@@ -9,15 +9,26 @@ public sealed class EnemySpawner : MonoBehaviour
     [SerializeField] private float intervalSec = 1.0f;
     [SerializeField] private float spawnY = 6.0f;
     [SerializeField] private float spawnXMin = -3.0f;
-    [SerializeField] private float spawnXMax =  3.0f;
+    [SerializeField] private float spawnXMax = 3.0f;
 
     [Header("Safety")]
     [SerializeField] private int maxSpawnPerFrame = 3;
 
+    private GameManager gameManager;
     private float _acc;
 
+    private void Start()
+    {
+        gameManager = FindFirstObjectByType<GameManager>();
+    }
     private void Update()
     {
+
+        if (gameManager != null && !gameManager.IsPlaying)
+        {
+            return;
+        }
+
         if (enemyPrefab == null) return;
 
         _acc += Time.deltaTime;

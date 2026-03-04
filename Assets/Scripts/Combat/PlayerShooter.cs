@@ -10,8 +10,13 @@ public class PlayerShooter : MonoBehaviour
     [Header("Tuning")]
     [SerializeField] private float fireInterval = 1.0f; // 1秒に4発なら0.25fとする
 
+    private GameManager gameManager;
     private float _timer;
 
+    private void Start()
+    {
+        gameManager = FindFirstObjectByType<GameManager>();
+    }
     private void Awake()
     {
         if (playerGroup == null)
@@ -22,6 +27,11 @@ public class PlayerShooter : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager != null && !gameManager.IsPlaying)
+        {
+            return;
+        }
+
         if (bulletPrefab == null || muzzle == null) return;
 
         _timer += Time.deltaTime;
