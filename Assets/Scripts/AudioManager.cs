@@ -4,6 +4,8 @@ public class AudioManager : MonoBehaviour
 {
     public bool IsMuted { get; private set; }
 
+    private float _volumeBeforeMute = 1f;
+
     // Day9最小：全体一括で止める（BGM/SE共通）
     public void ToggleMute()
     {
@@ -12,19 +14,38 @@ public class AudioManager : MonoBehaviour
 
     public void SetMuted(bool muted)
     {
-        IsMuted = muted;
+        // 同じ状態への再設定は何もしない
+        if (IsMuted == muted)
+        {
+            return;
+        }
 
-        // 最小で確実に効く方式（AudioSource個別制御が不要）
-        AudioListener.pause = muted;
+        if (muted)
+        {
+            // ミュート前の状態を退避
+            _volumeBeforeMute = AudioListener.volume;
+            AudioListener.pause = true;
+            AudioListener.volume = 0f;
+            IsMuted = true;
+            return;
+        }
 
-        // 任意：無音をより確実にしたいなら volume も落とす（pauseだけでもOK）
-        AudioListener.volume = muted ? 0f : 1f;
+        // アンミュート時は退避した値へ戻す
+        AudioListener.pause = false;
+        AudioListener.volume = _volumeBeforeMute;
+        IsMuted = false;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
-        // シーン遷移や停止時の安全策（必要なら）
-        // AudioListener.pause = false;
-        // AudioListener.volume = 1f;
+        // ミュート中のまま破棄されると、グローバル状態が残るため復元する
+        if (!IsMuted)
+        {
+            return;
+        }
+
+        AudioListener.pause = false;
+        AudioListener.volume = _volumeBeforeMute;
+        IsMuted = false;
     }
 }
