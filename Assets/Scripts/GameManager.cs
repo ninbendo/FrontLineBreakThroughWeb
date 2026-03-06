@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameState currentState = GameState.Ready;
 
+    // ★追加：UI司令塔（Inspectorで紐づける）
+    [SerializeField] private GameUIController gameUIController;
+
     public GameState CurrentState => currentState;
     public bool IsPlaying => currentState == GameState.Playing;
     public bool IsGameOver => currentState == GameState.GameOver;
@@ -22,6 +25,12 @@ public class GameManager : MonoBehaviour
     {
         currentState = GameState.Playing;
         Debug.Log("[GameManager] State -> Playing");
+
+        // ★任意：開始時は結果UIを消す（保険）
+        if (gameUIController != null)
+        {
+            gameUIController.HideResult();
+        }
     }
 
     public void SetGameOver()
@@ -33,6 +42,16 @@ public class GameManager : MonoBehaviour
 
         currentState = GameState.GameOver;
         Debug.Log("[GameManager] State -> GameOver");
+
+        // ★追加：GameOver表示（ResultPanelを出す）
+        if (gameUIController != null)
+        {
+            gameUIController.ShowGameOver();
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] gameUIController is not assigned.");
+        }
     }
 
     public void OnClickRetry()
