@@ -969,6 +969,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseDragSensitivity: 0.02
   touchDragSensitivity: 0.02
+  mouseDeadZone: 1.5
+  touchDeadZone: 0.01
   enableDebugLog: 0
 --- !u!114 &774592926
 MonoBehaviour:
