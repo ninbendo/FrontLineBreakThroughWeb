@@ -61,3 +61,11 @@ Thumbs.db
 # Assets/AddressableAssetsData/*.bin*
 # Assets/StreamingAssets/aa.meta
 # Assets/StreamingAssets/aa/
+
+# deploy/webgl/Build は通常の Unity Build とは別用途で、
+# .htaccess だけを管理したい
+!deploy/
+!deploy/webgl/
+!deploy/webgl/Build/
+deploy/webgl/Build/*
+!deploy/webgl/Build/.htaccess

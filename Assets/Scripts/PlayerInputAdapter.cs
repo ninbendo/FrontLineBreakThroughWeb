@@ -4,8 +4,12 @@ using UnityEngine.InputSystem;
 public class PlayerInputAdapter : MonoBehaviour
 {
     [Header("Drag Sensitivity")]
-    [SerializeField] private float mouseDragSensitivity = 0.02f;
+    [SerializeField] private float mouseDragSensitivity = 0.01f;
     [SerializeField] private float touchDragSensitivity = 0.02f;
+
+    [Header("Dead Zone")]
+    [SerializeField] private float mouseDeadZone = 1.5f;
+    [SerializeField] private float touchDeadZone = 0.01f;
 
     [Header("Debug")]
     [SerializeField] private bool enableDebugLog = false;
@@ -25,7 +29,7 @@ public class PlayerInputAdapter : MonoBehaviour
         if (touchscreen != null && touchscreen.primaryTouch.press.isPressed)
         {
             float dx = touchscreen.primaryTouch.delta.ReadValue().x;
-            if (Mathf.Abs(dx) > 0.01f)
+            if (Mathf.Abs(dx) > touchDeadZone)
             {
                 CurrentHorizontal = Mathf.Clamp(dx * touchDragSensitivity, -1f, 1f);
                 IsPointerInput = true;
@@ -40,7 +44,7 @@ public class PlayerInputAdapter : MonoBehaviour
             if (mouse != null && mouse.leftButton.isPressed)
             {
                 float dx = mouse.delta.ReadValue().x;
-                if (Mathf.Abs(dx) > 0.01f)
+                if (Mathf.Abs(dx) > mouseDeadZone)
                 {
                     CurrentHorizontal = Mathf.Clamp(dx * mouseDragSensitivity, -1f, 1f);
                     IsPointerInput = true;
