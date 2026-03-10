@@ -1,0 +1,881 @@
+---
+
+# 技術設計メモ v1（クラス責務・参照関係）
+
+## FrontLineBreakThroughWeb（MVP）
+
+**対象**：Unity 6.0 / Web（WebGL） / 2Dベース / 縦画面固定
+**目的**：MVP実装時に、クラス責務の衝突・AI出力のブレを減らす
+
+---
+
+## 0. このメモの役割（最初に）
+
+このメモは以下を固定するためのものです。
+
+* どのクラスが何を担当するか（責務）
+* どのクラスがどのクラスを参照してよいか（参照関係）
+* Unityでどこにアタッチするか（接続先）
+* AIに依頼するときの“勝手な設計変更”を防ぐ
+
+> **重要方針**
+>
+> * まずは **動くMVP** を優先
+> * ただし「全部入り巨大クラス」は避ける
+> * **責務分離は最低限やる**（後で直せるようにする）
+
+---
+
+## 1. 技術前提（固定）
+
+### 1-1. ゲーム前提
+
+* 2D風の見た目を目指す（実装は3Dコンポーネント利用可）
+* 現MVPは 3D Collider / Trigger ベースで進行中
+* 縦画面固定（スマホ軸）
+* 自動射撃 + 左右連続スライド
+* 前進方向の見せ方は「Player自動前進」または「敵/背景の相対移動」のどちらでも可
+* MVP現段階では、Player自身のY方向自動移動は行わず、敵/障害物の下方向移動で前進感を表現する
+* 兵隊HP = 2
+* ゲート：弾で数値変化、接触時に人数反映
+* タル：耐久値、破壊でアイテム、接触1回で1体消滅
+* トゲ：接触で兵隊HPを1減らす（2回で消滅）
+* 武器Lvは最大3（連射速度アップ）
+* Web公開（Xserver）
+
+### 1-2. 座標系（MVP固定）
+
+* **2Dの見た目で前進方向は `Y+`**
+* 左右移動は `X`
+* `Z` は描画順の微調整用（原則固定）
+
+> これを固定しておくと、AIが3D前提コードを書く事故が減ります。
+
+### 1-3. 当たり判定方針（MVP固定）
+
+* Trigger中心
+* 現MVPは 3D Collider / Rigidbody / OnTriggerEnter ベース
+* 将来2Dへ寄せる必要がなければ、この方針を正式採用
+* 物理挙動のリアルさは不要
+* 重い物理演算は避ける
+
+---
+
+## 2. 設計方針（MVP向け）
+
+### 2-1. レイヤー分割（概念）
+
+* **Core**：ゲーム状態・全体制御
+* **Player**：兵隊群、兵隊個体、射撃、隊列
+* **Stage**：ゲート、タル、トゲ、ゴール、アイテム
+* **UI**：HUD、結果表示
+* **Audio**：音ON/OFF、再生
+* **Config**：調整値
+
+### 2-2. 依存方向（原則）
+
+依存は基本的に次の向きにする：
+
+`UI / Stage / Player → Core（GameManager）`
+
+ただしMVPでは以下の直接参照を許可：
+
+* `Stage` → `PlayerGroupController`（人数増減・武器Lv適用）
+* `Player` → `GameManager`（全滅通知など）
+* `UI` → `GameManager`, `AudioManager`
+
+> 将来はイベント化できるが、MVPでは「わかりやすさ優先」でOK。
+
+---
+
+## 3. シーン構成とアタッチ先（Unity）
+
+## 3-1. シーン
+
+* MVPは `GameScene` 1枚構成で可
+
+## 3-2. Hierarchy（ヒエラルキー / Hierarchy）推奨構成
+
+* `GameRoot`
+
+  * `GameManager`（`GameManager.cs`）
+  * `AudioManager`（`AudioManager.cs`）
+  * `StageManager`（任意・後回し可。MVP初期は未配置でもよい）
+* `PlayerRoot`
+
+  * `PlayerGroup`（`PlayerGroupController.cs` + `PlayerInputAdapter.cs`）
+  * `SoldierVisualContainer`（`SoldierFormationController.cs`）
+  * `FirePoint`（Transform）
+* `StageRoot`
+
+  * `Gates`（各ゲートに `GateController.cs`）
+  * `Barrels`（各タルに `BarrelController.cs`）
+  * `Spikes`（各トゲに `SpikeController.cs`）
+  * `Goal`（`GoalController.cs`）
+* `BulletRoot`
+* `ItemRoot`
+* `UIRoot`
+
+  * `Canvas`
+  * `HUD`（`GameUIController.cs` 管理対象）
+  * `ResultPanel`
+
+---
+
+## 4. クラス一覧（MVP v1）
+
+以下は **MVP必須クラス** と **準必須クラス** を分けています。
+
+### 4-1. MVP必須
+
+#### Core
+
+* `GameManager`
+* `AudioManager`
+
+#### Player
+
+* `PlayerInputAdapter`
+* `PlayerGroupController`
+* `BulletController`
+* `SoldierFormationController`
+* `SoldierUnit`
+
+#### Stage
+
+* `GateController`
+* `BarrelController`
+* `ItemPickup`
+* `SpikeController`
+* `GoalController`
+
+#### UI
+
+* `GameUIController`
+
+### 4-2. 準必須（後で導入してもよい）
+
+* `GameBalanceConfig`（最初は各クラスInspectorでも可）
+* `StageManager`
+* `ObjectPool`（弾が増えてから）
+* `DamageFlashEffect`（見た目専用）
+
+---
+
+## 5. クラス責務（詳細）
+
+## 5-1. Core層
+
+### A. `GameManager`
+
+**責務（やること）**
+
+* ゲーム状態管理
+
+  * `Ready / Playing / Clear / GameOver / Paused`
+* ゲーム開始・終了制御
+* クリア/失敗の確定
+* リトライ処理（シーン再読み込みなど）
+* UI更新トリガー（`GameUIController`へ通知）
+* 必要に応じて全体停止（TimeScaleなど）
+
+**責務外（やらないこと）**
+
+* プレイヤー移動
+* 弾挙動
+* ゲート数値ロジック
+* タル耐久管理
+
+**主な参照先**
+
+* `GameUIController`
+* `AudioManager`
+* （必要なら）`PlayerGroupController`
+
+**public API（MVP必須）**
+* `StartGame()`
+* `OnPlayerAllDead()`
+* `OnGoalReached()`
+* `RetryGame()`
+* `IsPlaying()`
+
+**public API（任意/将来拡張）**
+* `PauseGame()`
+* `ResumeGame()`
+* `GetCurrentState()`
+
+---
+
+### B. `AudioManager`
+
+**責務**
+
+* BGM再生/停止
+* SE再生
+* 音ON/OFF一括管理
+* UIボタンからのトグル反映
+
+**責務外**
+
+* UI表示更新（`GameUIController`が担当）
+
+**主な参照先**
+
+* なし（独立性高い）
+* `GameUIController`から呼ばれる
+
+**主な公開API（例）**
+
+* `ToggleMute()`
+* `SetMuted(bool)`
+* `IsMuted()`
+* `PlaySE(string key)` または個別メソッド
+
+---
+
+## 5-2. Player層
+
+### C. `PlayerInputAdapter`
+
+**補足（MVP現段階）**
+
+* 正式仕様は PCマウス / スマホタッチ入力
+* ただしMVP序盤では、動作確認用としてキーボード左右入力を仮入力として許可する
+* Day6以降または別フェーズで、マウス/タッチの正式入力へ寄せる
+
+**責務外**
+
+* 実際の移動処理
+* 射撃処理
+* 当たり判定
+
+**主な参照先**
+
+* 原則なし（入力値を提供するだけ）
+* `PlayerGroupController`に同居でも可
+
+**主な公開API（例）**
+
+* `float GetHorizontalInputNormalized()`
+* `float GetPointerWorldX()`（方式次第）
+* `bool IsDragging()`
+
+> **MVP推奨**：
+> 「正規化入力値」より、**目標X座標（PointerWorldX）** を返す方がスマホ/PC共通化しやすいことが多いです。
+
+---
+
+### D. `PlayerGroupController`
+
+**責務（MVPの中心）**
+
+* 左右移動（連続スライド）
+* 自動射撃
+* 兵隊人数管理
+* 武器レベル管理（Lv1〜Lv3）
+* 全滅判定
+* `SoldierFormationController` への再配置指示
+* `GameManager` への失敗通知
+* 前進型シューティングのプレイヤー本体制御
+
+**責務外**
+
+* 個々の兵隊HP詳細の内部ロジック（`SoldierUnit`）
+* ゲート/タル/トゲの個別ロジック
+* UIの見た目更新（値提供はOK）
+* 敵/障害物の前進演出ロジックそのもの
+
+**主な参照先**
+
+* `GameManager`
+* `PlayerInputAdapter`
+* `SoldierFormationController`
+* `BulletRoot`（Transform）
+* 弾Prefab
+* `AudioManager`（任意：射撃SE）
+
+**public API（MVP必須）**
+* `AddSoldiers(int amount)`
+* `RemoveSoldiers(int amount)`
+* `ApplyWeaponUpgrade(int levelDelta = 1)`
+* `int GetCurrentSoldierCount()`
+* `int GetWeaponLevel()`
+
+**public API（任意/将来拡張）**
+* `RemoveOneSoldierByContact(Vector2 hitPoint)`（接触位置優先の削除）
+* `SetMoveBounds(float minX, float maxX)`
+* `SetFireEnabled(bool enabled)`
+
+※ AI実装時は「MVP必須API」を先に実装し、任意APIはスタブ or 未実装でよい。
+
+**内部保持データ（例）**
+
+* `currentSoldierCount`
+* `weaponLevel`（1〜3）
+* `sideSpeed`
+* `minX`, `maxX`
+* `fireIntervalByWeaponLevel`
+* `bulletPrefab`, `firePoint`, `bulletRoot`
+* 発射タイマー
+* 合計人数上限管理（中心ユニットを含む）
+
+> **注意（AI向け固定）**
+> `PlayerGroupController` に「ゲート数値ロジック」を入れない。
+> 人数適用は受けるだけにする。
+
+**補足**
+
+* MVP現段階では、PlayerGroup 自身のY方向自動移動は行わない
+* 前進感は敵/障害物の相対移動で表現する
+
+---
+
+### E. `BulletController`
+
+**責務**
+
+* 弾の直進移動
+* 寿命（射程 or 時間）で消滅
+* 対象命中時の通知
+* （必要なら）1回命中で消滅
+
+**責務外**
+
+* ダメージ計算の本体
+* ゲート/タルの状態変更ロジック本体（対象に委譲）
+
+**主な参照先**
+
+* 衝突相手（`GateController`, `BarrelController` など）
+* `AudioManager`（任意：命中SE）
+
+**主な公開API（例）**
+
+* `Initialize(float speed, float lifetime, int power = 1)`
+
+**推奨設計（MVPでも有効）**
+
+* 命中相手に直接型分岐してもよいが、可能なら簡易インターフェース：
+
+  * `IBulletHittable.OnBulletHit(BulletHitContext ctx)`
+
+> ただし初心者実装なら最初は `GetComponent<GateController>()` 等でもOK。
+
+---
+
+### F. `SoldierFormationController`
+
+**責務**
+
+* 兵隊見た目の配置
+* 人数変化時の再配置
+* リング配置（中心+5重、10/20/30/40/50）
+* 時計回り配置
+* （必要なら）見た目生成/破棄
+
+**責務外**
+
+* 人数の正しさ判定（`PlayerGroupController`）
+* HPロジック
+* ダメージ判定
+
+**主な参照先**
+
+* `PlayerGroupController`（人数情報取得 or 変更通知）
+* `SoldierUnit` プレハブ
+
+**public API（MVP必須）**
+* `RebuildFormation(int soldierCount)`
+
+**public API（任意/将来拡張）**
+* `TryGetNearestSoldierToPoint(Vector2 point, out SoldierUnit soldier)`
+* `RemoveVisualForSoldier(SoldierUnit soldier)`
+
+**実装方針（段階的）**
+
+* v1：簡易配置（円 or 行列）
+* v2：本命リング配置
+
+> ただし今回の要件的には最終的にリングが欲しいので、早めにv2へ寄せる。
+
+※人数の真実源（source of truth）は PlayerGroupController とする。
+SoldierFormationController は「表示用の再構築・再配置」を担当し、
+人数決定や増減判定は行わない。
+
+---
+
+### G. `SoldierUnit`
+
+**責務**
+
+* 兵隊個体HP管理（初期HP=2）
+* ダメージ受付（1減少）
+* 消滅判定
+* 被弾演出（色変更・点滅）
+* 生存フラグ管理
+
+**責務外**
+
+* 人数の総計管理（`PlayerGroupController`）
+* 隊列再配置（`SoldierFormationController`）
+* ゲームオーバー判定
+
+**主な参照先**
+
+* `PlayerGroupController`（死亡通知）
+* `SpriteRenderer`（見た目変化）
+
+**主な公開API（例）**
+
+* `Initialize(PlayerGroupController owner)`
+* `TakeDamage(int amount = 1)`
+* `bool IsAlive()`
+* `Vector2 GetWorldPosition()`
+
+---
+
+## 5-3. Stage層
+
+### H. `GateController`
+
+**責務**
+
+* ゲートの現在値（int）管理
+* 弾命中で数値変化（例：`+1`ずつ）
+* 表示更新（TMP）
+* プレイヤー接触時に一度だけ人数へ反映
+* 増加/減少ゲートの見た目更新（色）
+
+**責務外**
+
+* プレイヤー人数の内部管理
+* 弾そのものの挙動
+
+**主な参照先**
+
+* `PlayerGroupController`
+* `TextMeshPro` (`TMP_Text`)
+* `SpriteRenderer`
+
+**public API（MVP必須）**
+* `OnBulletHit(int amount = 1)`
+* `ApplyToPlayerOnce(PlayerGroupController player)`
+
+**public API（任意/将来拡張）**
+* `SetGateValue(int value)`
+* `SetVisualState()`（表示更新を外から明示的に呼びたい場合）
+* `ResetState()`（リトライ時の明示初期化が必要になった場合）
+
+
+**接触処理方針（固定）**
+
+* **ゲート面に触れた瞬間（OnTriggerEnter2D）** に反映
+* 反映後は `isApplied = true`
+
+> AIが「中心通過判定」に変えないように固定。
+
+---
+
+### I. `BarrelController`
+
+**責務**
+
+* 耐久値管理（表示あり）
+* 弾命中で耐久減少
+* 破壊判定
+* アイテムドロップ生成（固定）
+* プレイヤー接触時の「1回で1体消滅」
+* 破壊済み/接触可能状態管理
+
+**責務外**
+
+* プレイヤー人数ロジック本体
+* アイテム取得後の武器強化本体（`ItemPickup` → `PlayerGroupController`）
+
+**主な参照先**
+
+* `PlayerGroupController`
+* `ItemPickup` プレハブ
+* `TMP_Text`
+* `AudioManager`（任意）
+
+**public API（MVP必須）**
+* `OnBulletHit(int damage = 1)`
+* `BreakBarrel()`
+
+**public API（任意/将来拡張）**
+* `ApplyContactPenaltyOnce(PlayerGroupController player)`（接触時1体減少を分離したい場合）
+* `ResetState()`（リトライ時の明示初期化が必要になった場合）
+* `SetDurability(int value)`（デバッグ/演出都合で必要になった場合）
+
+**接触1回の定義（MVP固定）**
+
+* `OnTriggerEnter2D` 1回 = 1体減少（同一侵入イベント単位）
+
+> 将来の多段ヒット・再侵入制限は別仕様。
+
+---
+
+### J. `ItemPickup`
+
+**責務**
+
+* アイテム種別保持（MVPは機関銃メイン）
+* プレイヤー接触で効果適用
+* 取得済みフラグ管理
+* 自身の消滅
+
+**責務外**
+
+* 武器レベルの内部ロジック（`PlayerGroupController`）
+* UI更新（GameUIController経由）
+
+**主な参照先**
+
+* `PlayerGroupController`
+
+**public API（MVP必須）**
+* `ApplyTo(PlayerGroupController player)`
+
+**public API（任意/将来拡張）**
+* `SetItemType(ItemType type)`（複数アイテム化する場合）
+* `SetConsumed(bool consumed)`（演出/デバッグ用）
+* `ResetState()`（再利用やプール対応時）
+
+---
+
+### K. `SpikeController`
+
+**責務**
+
+* 接触した兵隊へのダメージ適用（HP-1）
+* 接触対象が兵隊群/兵隊個体かを判定
+* 同一フレーム多重ダメージの抑制（必要なら）
+
+**責務外**
+
+* HP管理本体（`SoldierUnit`）
+* 人数総計管理（`PlayerGroupController`）
+
+**主な参照先**
+
+* `SoldierUnit`
+* `PlayerGroupController`（フォールバック時）
+
+**public API（MVP必須）**
+* なし（Triggerイベントで完結）
+
+**public API（任意/将来拡張）**
+* `SetEnabled(bool enabled)`（一時無効化が必要になった場合）
+* `ResetState()`（クールタイム/内部フラグを持つ実装にした場合）
+
+**実装メモ**
+
+* 理想は「接触兵隊個体を特定して `TakeDamage(1)`」
+* 難しければMVP初期は `PlayerGroupController.RemoveOneSoldier()` フォールバックでも可
+  （ただし要件上はHP=2なので、最終的には `SoldierUnit` 化が必要）
+
+---
+
+### L. `GoalController`
+
+**責務**
+
+* プレイヤー接触でクリア通知
+* 二重発火防止
+
+**責務外**
+
+* 結果UI表示本体
+* スコア計算本体（MVPではGameManager側でも可）
+
+**主な参照先**
+
+* `GameManager`
+
+**public API（MVP必須）**
+* なし（Triggerイベントで完結）
+
+**public API（任意/将来拡張）**
+* `SetEnabled(bool enabled)`（演出中に無効化したい場合）
+* `ResetState()`（二重発火防止フラグの初期化が必要になった場合）
+
+---
+
+## 5-4. UI層
+
+### M. `GameUIController`
+
+**責務**
+
+* HUD更新（兵隊数 / 武器Lv）
+* 結果パネル表示（Clear / GameOver）
+* 残兵数表示
+* リトライボタンイベント
+* 音ON/OFFボタン表示と操作連携
+
+**責務外**
+
+* ゲーム状態判定（`GameManager`）
+* 音ロジック本体（`AudioManager`）
+
+**主な参照先**
+
+* `GameManager`
+* `PlayerGroupController`
+* `AudioManager`
+* `TMP_Text`, `Button`, `GameObject(Panel)`
+
+**public API（MVP必須）**
+* `RefreshHUD(int soldierCount, int weaponLv)`
+* `ShowResult(bool isClear, int remainCount)`
+* `UpdateSoundButtonLabel(bool muted)`
+
+**public API（任意/将来拡張）**
+* `ShowToast(string message)`
+* `SetInteractable(bool enabled)`
+
+MVPではHUD更新は「変更時Push」を基本とする（毎フレーム更新しない）。
+更新契機の例：
+- 兵隊数変化時
+- 武器Lv変化時
+- ゲーム状態変化時
+- ミュート状態変化時
+
+---
+
+## 6. 参照関係（依存関係）まとめ
+
+## 6-1. 依存マップ（簡略）
+
+* `GameManager`
+
+  * → `GameUIController`
+  * → `AudioManager`
+* `GameUIController`
+
+  * → `GameManager`
+  * → `PlayerGroupController`
+  * → `AudioManager`
+* `PlayerGroupController`
+
+  * → `GameManager`
+  * → `PlayerInputAdapter`
+  * → `SoldierFormationController`
+  * → `BulletController`（Prefab生成）
+* `SoldierFormationController`
+
+  * → `SoldierUnit`（生成/管理）
+* `SoldierUnit`
+
+  * → `PlayerGroupController`（死亡通知）
+* `GateController`
+
+  * → `PlayerGroupController`
+* `BarrelController`
+
+  * → `PlayerGroupController`
+  * → `ItemPickup`（Prefab生成）
+* `ItemPickup`
+
+  * → `PlayerGroupController`
+* `SpikeController`
+
+  * → `SoldierUnit`（理想）
+  * （フォールバック）→ `PlayerGroupController`
+* `GoalController`
+
+  * → `GameManager`
+
+## 6-2. 禁止（MVPでも避ける）
+
+* `GateController` → `GameUIController` 直接更新
+* `BarrelController` → `GameUIController` 直接更新
+* `SpikeController` → `GameManager` 直接ゲームオーバー決定
+* `BulletController` が `GameManager` を直接触る
+
+> UI更新や終了判定は、原則として
+> **PlayerGroupController / GameManager を経由** して一元化。
+
+---
+
+## 7. 通信方式（イベント vs 直接参照）
+
+### 7-1. MVP v1の方針
+
+* **まずは直接参照中心でOK**
+* ただし通知の向きは単純にする（上記依存マップに従う）
+
+### 7-2. 直接参照にする理由
+
+* Unity初心者には追いやすい
+* AIが生成したコードをデバッグしやすい
+* `Inspector（インスペクター / Inspector）` で参照確認しやすい
+
+### 7-3. 将来イベント化する候補
+
+* `OnSoldierCountChanged`
+* `OnWeaponLevelChanged`
+* `OnGameStateChanged`
+* `OnSoundMuteChanged`
+
+---
+
+## 8. データ・状態の持ち場所（固定）
+
+「どこに何を持つか」を先に固定しておくと、AIコードのズレが減ります。
+
+### 8-1. `GameManager` が持つ
+
+* ゲーム状態（Playing/Clear/GameOver）
+* クリア/失敗フラグ
+* （任意）最終残兵数
+* リトライ処理用情報
+
+### 8-2. `PlayerGroupController` が持つ
+
+* 現在兵隊数
+* 武器レベル
+* 移動速度 / 射撃設定
+* 発射タイマー
+* 弾Prefab参照
+* `SoldierFormationController` 参照
+
+### 8-3. `SoldierUnit` が持つ
+
+* 個体HP（初期2）
+* 生存フラグ
+* 見た目状態（通常/被弾）
+
+### 8-4. `GateController` が持つ
+
+* `currentValue`
+* `isApplied`
+* 増減タイプ（色や符号でも可）
+
+### 8-5. `BarrelController` が持つ
+
+* `currentDurability`
+* `isBroken`
+* ドロップPrefab参照
+
+### 8-6. `AudioManager` が持つ
+
+* `isMuted`
+* AudioSource参照（BGM/SE）
+
+---
+
+## 9. 当たり判定の技術ルール（MVP固定）
+
+### 9-1. Bullet → Stage / Enemy
+
+* `BulletController` の `OnTriggerEnter` で相手を判定
+* `GateController` / `BarrelController` / `EnemyController` などにヒット通知
+* ヒット後、弾は消滅（MVP）
+* 貫通弾は将来拡張（未実装）
+
+### 9-2. Player → Gate
+
+* `GateController` 側で `OnTriggerEnter`
+* プレイヤー接触を検知したら一度だけ人数反映
+* 重複反映防止フラグ必須
+
+### 9-3. Player/Soldier → Barrel
+
+* `BarrelController` 側で `OnTriggerEnter`
+* 「接触1回で1体消滅」を実行
+* 破壊済み後の接触挙動は仕様で固定（通常は無効化）
+
+### 9-4. Player/Soldier → Spike
+
+* `SpikeController` 側で接触検知
+* 可能なら接触兵隊個体に `TakeDamage(1)`
+* 同一接触で多重ヒットしすぎないよう制御（必要ならクールタイム）
+
+---
+
+## 10. AIに依頼するときの固定ルール（重要）
+
+AI比較もする予定とのことなので、ここを固定しておくと比較しやすいです。
+
+### 10-1. コード依頼時に毎回伝える固定文（短縮版）
+
+* Unity 6.x / Web向け / 縦画面
+* 見た目は2D風だが、現MVP実装は3D Triggerベース
+* 前進方向の見せ方は「敵/障害物の相対移動」
+* PlayerGroupController は人数・武器Lv・左右移動・射撃を担当
+* ゲート/タル/トゲのロジックは各Controllerに分離
+* UI更新はGameUIController、ゲーム状態はGameManager
+* 直接参照ベースでOK（イベント化は不要）
+* 勝手に 2D 専用API（OnTriggerEnter2D など）へ戻さないこと
+* 正式入力仕様はマウス/タッチだが、MVP段階では仮入力コードが混在してもよい
+
+### 10-2. AI出力の確認ポイント
+
+* 勝手に 2D 専用API（OnTriggerEnter2D 等）へ戻していないか
+* `Update()` に全機能を詰め込んでいないか
+* `GameManager` が巨大化していないか
+* `GateController` が UI を直接更新していないか
+* `SpikeController` がHP=2仕様を無視していないか
+
+---
+
+## 11. 実装順におけるクラス導入順（推奨）
+
+この順で作ると詰まりにくいです。
+
+1. `PlayerInputAdapter`
+2. `PlayerGroupController`
+3. `BulletController`
+4. `GameManager`
+5. `GameUIController`（最低限）
+6. `GateController`
+7. `SoldierFormationController`（簡易→リング）
+8. `BarrelController`
+9. `ItemPickup`
+10. `SoldierUnit`
+11. `SpikeController`
+12. `GoalController`
+13. `AudioManager`
+
+> 先に `SpikeController` をやると、兵隊個体HPの都合で詰まりやすいです。
+> まずはゲート/タルでゲームループを成立させる方が速いです。
+
+---
+
+## 12. v1時点の未決定事項（意図的に残す）
+
+ここは今決めなくてOK。実装しながら決めれば十分です。
+
+* 弾の対象優先ロジックの厳密化（自動照準の精度）
+* 兵隊接触位置優先の厳密アルゴリズム（最初は近傍でOK）
+* Object Pool導入タイミング
+* スコア計算の詳細（MVP後）
+* 演出（被弾点滅、破壊エフェクト）詳細
+
+---
+
+## 13. 40分で今日やるなら（おすすめ）
+
+今日の残り時間を考えると、次のどちらかが良いです。
+
+### 案A（おすすめ）
+
+* この技術設計メモを保存
+* 明日用に **クラスひな形ファイル一覧** だけ作る（空ファイルでOK）
+
+  * `GameManager.cs`
+  * `PlayerGroupController.cs`
+  * `PlayerInputAdapter.cs`
+  * `BulletController.cs`
+  * `GateController.cs`
+  * `GameUIController.cs`
+* Unityでコンパイルエラー0確認
+
+### 案B
+
+* `PlayerInputAdapter` と `PlayerGroupController` の実装着手（移動のみ）
+* 今日中に「自動前進＋左右移動」を1回動かす
+
+---

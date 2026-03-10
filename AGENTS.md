@@ -4,12 +4,12 @@
 FrontLineBreakThroughWeb で AI に実装依頼する際の共通ルール。
 
 ## 参照順
-1. ★①ゲーム要件_V11.txt
-2. ★②ゲーム設計書（MVP版 v1.0）.txt
-3. ★③技術設計メモ v1（クラス責務・参照関係）.txt
-4. ★④実装タスク票 v1.txt
-5. ★⑤受け入れテスト表.txt
-6. ⑥自動テスト方針メモ（Unity Test Framework導入用）.txt
+1. docs/specs/1.ゲーム要件.txt
+2. docs/specs/2.ゲーム設計書.txt
+3. docs/specs/3.技術設計メモ（クラス責務・参照関係）.txt
+4. docs/specs/4.実装タスク票.txt
+5. docs/specs/5.受け入れテスト表.txt
+6. docs/specs/6.自動テスト方針メモ（Unity Test Framework導入用）.txt
 
 ## 変更禁止
 - ProjectSettings/ProjectSettings.asset
