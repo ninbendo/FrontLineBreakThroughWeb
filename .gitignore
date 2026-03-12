@@ -41,8 +41,9 @@ MemoryCaptures/
 # Keep your .slnx if you're using it
 !*.slnx
 
-# VS Code local settings (team共有しない方が無難)
-.vscode/
+# VS Code local settings (基本は共有しない)
+.vscode/*
+!.vscode/mcp.json
 
 # JetBrains Rider
 .idea/
