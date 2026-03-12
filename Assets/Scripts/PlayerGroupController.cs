@@ -18,11 +18,20 @@ public class PlayerGroupController : MonoBehaviour
     [Header("Temporary HP")]
     [SerializeField] private int maxHp = 2;
 
+    [Header("Gate Eval Debug")]
+    [SerializeField] private int debugAppliedGateTotal;
+
     private int currentHp;
     private GameManager gameManager;
 
     public int WeaponLevel => weaponLevel;
     public int CurrentHp => currentHp;
+
+    public void ApplyGateValue(int gateValue)
+    {
+        debugAppliedGateTotal += gateValue;
+        Debug.Log($"[PlayerGroupController] Gate applied: {gateValue}, total={debugAppliedGateTotal}");
+    }
 
     public void UpgradeWeaponLevel()
     {

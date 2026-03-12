@@ -33,8 +33,20 @@ public class BulletController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // ✅ 2回目以降は無視（連動Destroy防止）
         if (_hasHit) return;
+
+        // ✅ 2回目以降は無視（連動Destroy防止）
+        var gate = other.GetComponentInParent<GateController>();
+        if (gate != null)
+        {
+            _hasHit = true;
+
+            if (_col != null) _col.enabled = false;
+
+            gate.ApplyBulletHit();
+            Destroy(gameObject);
+            return;
+        }
 
         if (!other.CompareTag("Enemy")) return;
 
