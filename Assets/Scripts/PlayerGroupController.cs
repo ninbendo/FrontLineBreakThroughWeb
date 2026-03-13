@@ -31,6 +31,14 @@ public class PlayerGroupController : MonoBehaviour
         Debug.Log($"[PlayerGroupController] Weapon level up: {oldLevel} -> {weaponLevel}");
     }
 
+    public void Heal(int amount)
+    {
+        if (amount <= 0) return;
+        int oldHp = currentHp;
+        currentHp = Mathf.Min(currentHp + amount, maxHp);
+        Debug.Log($"[PlayerGroupController] Healed: {oldHp} -> {currentHp}");
+    }
+
     public void TakeDamage(int amount)
     {
         if (amount <= 0) return;

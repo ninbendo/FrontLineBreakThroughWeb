@@ -48,6 +48,9 @@ MemoryCaptures/
 .idea/
 *.sln.iml
 
+# Claude Code local settings
+.claude/
+
 # =========================
 # OS files
 # =========================
