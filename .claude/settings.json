@@ -9,5 +9,18 @@
       "Bash(git log*)",
       "Bash(git branch*)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File .claude/hooks/notify.ps1 -Message 'エージェント処理が完了しました'"
+          }
+        ]
+      }
+    ]
   }
 }
