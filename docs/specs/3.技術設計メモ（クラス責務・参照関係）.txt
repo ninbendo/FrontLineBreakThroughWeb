@@ -113,8 +113,11 @@
   * `Gates`（各ゲートに `GateController.cs`）
   * `Barrels`（各タルに `BarrelController.cs`）
   * `Spikes`（各トゲに `SpikeController.cs`）
-  * `Enemies`（各敵に `EnemyController.cs`）
   * `Goal`（`GoalController.cs`）
+* `EnemyRoot`
+
+  * `Enemies`（各敵に `EnemyController.cs`）
+  * `EnemySpawner`（`EnemySpawner.cs`）
 * `BulletRoot`
 * `ItemRoot`
 * `UIRoot`
