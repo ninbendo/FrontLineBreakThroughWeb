@@ -4,7 +4,7 @@
 
 ## FrontLineBreakThroughWeb（MVP）
 
-**対象**：Unity 6.0 / Web（WebGL） / 縦画面 / 2Dベース
+**対象**：Unity 6（6000.3.9f1） / Web（WebGL） / 縦画面 / 3D見下ろし斜め視点（3D Trigger実装）
 **目的**：MVPをブラウザで遊べる状態まで作る
 
 ---
@@ -308,8 +308,8 @@
 
 1. ヒエラルキーで弾用スプライト（小さい四角/丸）作成
 2. 名前 `Bullet`
-3. 必要なら `Collider2D`（Trigger）追加
-4. `Rigidbody2D`（必要ならKinematic）
+3. 必要なら `BoxCollider`（3D Trigger）追加
+4. `Rigidbody`（3D、IsKinematic）
 5. `Prefabs` フォルダへドラッグしてプレハブ化
 6. ヒエラルキー上の弾は削除
 
@@ -485,7 +485,7 @@
 
 1. `StageRoot` 配下に `Gates` 空オブジェクト作成
 2. 四角スプライトを作り `Gate_Negative_01` など命名
-3. `BoxCollider2D` を追加（Trigger）
+3. `BoxCollider` を追加（3D Trigger）
 4. 見た目の色を赤/青にする（SpriteRenderer）
 
 #### 完了条件
@@ -552,7 +552,7 @@
 
 1. `StageRoot` 配下に `Barrels` 空オブジェクト
 2. 円 or 四角で `Barrel_01` 作成
-3. `Collider2D`（Trigger or 非Trigger設計に応じて）
+3. `BoxCollider`（3D Trigger or 非Trigger設計に応じて）
 4. 近くにTMPテキストを子として配置（耐久値表示）
 
 #### 完了条件
@@ -592,7 +592,7 @@
 #### 役割（後半）
 
 * プレイヤー集団との接触時に兵隊を1体減少させる
-* 「接触1回」の定義は `OnTriggerEnter2D` を基準にする
+* 「接触1回」の定義は `OnTriggerEnter`（3D）を基準にする
 * 継続接触で重複発生しないようにする（必要ならフラグ管理）
 
 #### 完了条件
@@ -633,7 +633,7 @@
 1. `StageRoot` 配下に `Spikes` 空オブジェクト
 2. 三角形風の見た目（仮でもOK）
 3. `Spike_01` を配置
-4. `Collider2D`（Trigger）追加
+4. `BoxCollider`（3D Trigger）追加
 
 #### 完了条件
 
@@ -690,7 +690,7 @@
 
 1. `StageRoot` 配下に `Goal` 作成
 2. 見た目（ライン/パネル）
-3. `Collider2D`（Trigger）追加
+3. `BoxCollider`（3D Trigger）追加
 
 #### 作成ファイル
 

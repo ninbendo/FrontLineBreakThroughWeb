@@ -4,7 +4,7 @@
 
 ## FrontLineBreakThroughWeb（MVP）
 
-**対象**：Unity 6.0 / Web（WebGL） / 2Dベース / 縦画面固定
+**対象**：Unity 6（6000.3.9f1） / Web（WebGL） / 3D見下ろし斜め視点（3D Trigger実装） / 縦画面固定
 **目的**：MVP実装時に、クラス責務の衝突・AI出力のブレを減らす
 
 ---
