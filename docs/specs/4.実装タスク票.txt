@@ -1039,10 +1039,11 @@
 5. **BarrelController + ItemPickup（機関銃＋護衛兵）**
 6. **SpikeController + SoldierUnit（HP2）**
 7. **GameManager（クリア/失敗）**
-8. **EnemyController + EnemySpawner（骨格）**
-9. **StageDataLoader（ステージデータ外部定義）**
-10. **UI**
-11. **Webビルド**
+8. **UI**
+9. **Webビルド**
+--- ここまでがMVP必須ライン ---
+10. **EnemyController + EnemySpawner（骨格）**（後回し可）
+11. **StageDataLoader（ステージデータ外部定義）**（後回し可）
 
 ---
 ## 他AIに依頼する時の共通ルール（必ず添える）
