@@ -2663,6 +2663,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9589c774c156b240b5c4c17104ba312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GateController
+  speed: 2.5
   effectValue: 1
 --- !u!23 &1695212543
 MeshRenderer:
@@ -2751,7 +2752,7 @@ Transform:
   m_GameObject: {fileID: 1695212540}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3, y: -8, z: 0}
+  m_LocalPosition: {x: 3, y: 0, z: 30}
   m_LocalScale: {x: 1.5, y: 1, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2943,6 +2944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9589c774c156b240b5c4c17104ba312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GateController
+  speed: 2.5
   effectValue: -1
 --- !u!23 &1802423179
 MeshRenderer:
@@ -3031,7 +3033,7 @@ Transform:
   m_GameObject: {fileID: 1802423176}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3, y: -8, z: 0}
+  m_LocalPosition: {x: -3, y: 0, z: 20}
   m_LocalScale: {x: 1.5, y: 1, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
