@@ -137,15 +137,9 @@ PlayerGroupController
 
 **現実装**: 固定のeffectValueを持ち、接触でHeal/TakeDamageするだけ。弾との相互作用なし。
 
-### 問題3: 座標系の不整合の可能性
+### ~~問題3: 座標系の不整合の可能性~~ → **解消済み（2026-03-17 PR#24）**
 
-仕様書ではZ軸固定（Z-方向が前進）と定義されているが、以下のコードはY軸で移動している:
-- BulletController: `Vector3.up`（Y+）
-- EnemyController: `Vector3.down`（Y-）
-- SpikeMover: `Vector3.down`（Y-）
-- DropItemController: `Vector3.down`（Y-）
-
-3D見下ろし斜め視点との整合性をUnityエディタで要確認。カメラ配置次第ではY軸移動でも見た目上問題ない場合がある。
+全オブジェクトをZ軸移動に統一。カメラを3D見下ろし斜め視点に配置。BarrelController/GateControllerにもZ軸移動を追加。
 
 ---
 
