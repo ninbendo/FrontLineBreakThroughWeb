@@ -1,13 +1,18 @@
 #!/bin/bash
 # PreToolUse hook: Edit/Write対象が変更禁止ファイルならブロックする
-# stdin から JSON を受け取り、file_path をチェックする
+# stdin から JSON を受け取り、tool_input.file_path をチェックする
 
 input=$(cat)
-file_path=$(echo "$input" | grep -o '"file_path"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"file_path"[[:space:]]*:[[:space:]]*"//' | sed 's/"$//')
+
+# tool_input.file_path を抽出（jq未使用、grep+sedで対応）
+file_path=$(echo "$input" | grep -o '"file_path" *: *"[^"]*"' | head -1 | sed 's/.*: *"//;s/"$//')
 
 if [ -z "$file_path" ]; then
   exit 0
 fi
+
+# Windowsパス（バックスラッシュ）をスラッシュに正規化
+file_path=$(echo "$file_path" | sed 's|\\\\|/|g' | sed 's|\\|/|g')
 
 # 変更禁止ファイルリスト
 BLOCKED_FILES=(
@@ -16,8 +21,8 @@ BLOCKED_FILES=(
 )
 
 for blocked in "${BLOCKED_FILES[@]}"; do
-  if echo "$file_path" | grep -q "$blocked"; then
-    echo "BLOCKED: $file_path は変更禁止ファイルです（AGENTS.md参照）"
+  if [[ "$file_path" == *"$blocked"* ]]; then
+    echo "BLOCKED: $file_path は変更禁止ファイルです（AGENTS.md参照）" >&2
     exit 2
   fi
 done
