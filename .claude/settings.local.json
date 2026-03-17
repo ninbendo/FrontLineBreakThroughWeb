@@ -1,10 +1,5 @@
 {
   "enabledMcpjsonServers": [
     "UnityMCP"
-  ],
-  "permissions": {
-    "allow": [
-      "Bash(git diff:*)"
-    ]
-  }
+  ]
 }
