@@ -13,7 +13,7 @@ public class PlayerGroupController : MonoBehaviour
     [SerializeField] private PlayerInputAdapter inputAdapter;
 
     [SerializeField] private int weaponLevel = 1;
-    [SerializeField] private int maxWeaponLevel = 5;
+    [SerializeField] private int maxWeaponLevel = 3;
 
     [Header("Temporary HP")]
     [SerializeField] private int maxHp = 2;
