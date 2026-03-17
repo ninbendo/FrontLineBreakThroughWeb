@@ -12,7 +12,8 @@ public class DropItemController : MonoBehaviour
     {
         // Day7時点では演出用。
         // 将来は自動吸着 / 接触取得 / 自動回収へ拡張予定。
-        transform.position += Vector3.down * moveSpeed * Time.deltaTime;
+        // Z-方向へ移動（奥→手前へ流れる）
+        transform.position += -Vector3.forward * moveSpeed * Time.deltaTime;
 
         _age += Time.deltaTime;
         if (_age >= lifeTime)

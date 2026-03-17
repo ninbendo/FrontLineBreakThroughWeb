@@ -18,6 +18,7 @@ public sealed class SpikeMover : MonoBehaviour
             return;
         }
 
-        transform.position += Vector3.down * (speed * Time.deltaTime);
+        // Z-方向へ移動（奥→手前へ流れる）
+        transform.position += -Vector3.forward * (speed * Time.deltaTime);
     }
 }

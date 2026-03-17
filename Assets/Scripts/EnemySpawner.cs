@@ -7,7 +7,7 @@ public sealed class EnemySpawner : MonoBehaviour
 
     [Header("Spawn")]
     [SerializeField] private float intervalSec = 1.0f;
-    [SerializeField] private float spawnY = 6.0f;
+    [SerializeField] private float spawnZ = 20.0f;
     [SerializeField] private float spawnXMin = -3.0f;
     [SerializeField] private float spawnXMax = 3.0f;
 
@@ -45,7 +45,7 @@ public sealed class EnemySpawner : MonoBehaviour
     private void SpawnOne()
     {
         float x = Random.Range(spawnXMin, spawnXMax);
-        Vector3 pos = new Vector3(x, spawnY, 0f);
+        Vector3 pos = new Vector3(x, 0f, spawnZ);
         Instantiate(enemyPrefab, pos, Quaternion.identity);
     }
 }

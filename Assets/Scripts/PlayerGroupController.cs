@@ -6,14 +6,14 @@ public class PlayerGroupController : MonoBehaviour
     [SerializeField] private float sideSpeed = 5.0f;
 
     [Header("X Clamp")]
-    [SerializeField] private float minX = -5.0f;
-    [SerializeField] private float maxX = 5.0f;
+    [SerializeField] private float minX = -10.0f;
+    [SerializeField] private float maxX = 10.0f;
 
     [Header("References")]
     [SerializeField] private PlayerInputAdapter inputAdapter;
 
     [SerializeField] private int weaponLevel = 1;
-    [SerializeField] private int maxWeaponLevel = 5;
+    [SerializeField] private int maxWeaponLevel = 3;
 
     [Header("Temporary HP")]
     [SerializeField] private int maxHp = 2;

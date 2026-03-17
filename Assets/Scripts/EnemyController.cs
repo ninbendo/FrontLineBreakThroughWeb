@@ -39,7 +39,8 @@ public sealed class EnemyController : MonoBehaviour
             return;
         }
 
-        transform.position += Vector3.down * (speed * Time.deltaTime);
+        // Z-方向へ移動（奥→手前へ流れる）
+        transform.position += -Vector3.forward * (speed * Time.deltaTime);
 
         _life += Time.deltaTime;
         if (_life >= lifetimeSec)
