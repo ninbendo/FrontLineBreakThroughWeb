@@ -1,10 +1,11 @@
 {
-  "enabledMcpjsonServers": [
-    "UnityMCP"
-  ],
   "permissions": {
     "allow": [
-      "Bash(cd *)"
+      "Bash(cd *)",
+      "mcp__UnityMCP__find_gameobjects"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "UnityMCP"
+  ]
 }
