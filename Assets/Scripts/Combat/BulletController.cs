@@ -20,8 +20,8 @@ public class BulletController : MonoBehaviour
 
     private void Update()
     {
-        // Y+方向へ移動
-        transform.position += Vector3.up * speed * Time.deltaTime;
+        // Z+方向へ移動（前方＝画面奥へ飛ぶ）
+        transform.position += Vector3.forward * speed * Time.deltaTime;
 
         // 寿命で破棄（無限増殖防止）
         _age += Time.deltaTime;
