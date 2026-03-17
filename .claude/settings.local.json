@@ -1,5 +1,10 @@
 {
   "enabledMcpjsonServers": [
     "UnityMCP"
-  ]
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(cd *)"
+    ]
+  }
 }

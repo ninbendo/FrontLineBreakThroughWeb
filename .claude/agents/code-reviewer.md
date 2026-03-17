@@ -2,7 +2,7 @@
 name: code-reviewer
 description: PRやブランチの変更内容をレビューし、仕様違反・アーキテクチャ違反・禁止事項の検出を行う読み取り専用エージェント。
 model: sonnet
-tools: Read, Glob, Grep, Bash
+tools: Read, Glob, Grep
 ---
 
 # コードレビューエージェント
@@ -14,7 +14,7 @@ tools: Read, Glob, Grep, Bash
 
 ### 1. 変更内容の把握
 
-`git diff main...HEAD` で変更差分を確認する。
+呼び出し元から提供される `git diff` の出力を確認する。差分が提供されていない場合は、その旨を報告して終了する。
 
 ### 2. 仕様・アーキテクチャチェック
 
