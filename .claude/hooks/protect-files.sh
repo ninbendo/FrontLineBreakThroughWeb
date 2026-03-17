@@ -22,7 +22,7 @@ BLOCKED_FILES=(
 
 for blocked in "${BLOCKED_FILES[@]}"; do
   if [[ "$file_path" == *"$blocked"* ]]; then
-    echo "BLOCKED: $file_path は変更禁止ファイルです（AGENTS.md参照）" >&2
+    echo "BLOCKED: $file_path は変更禁止ファイルです（AGENTS.md/CLAUDE.md参照）" >&2
     exit 2
   fi
 done
