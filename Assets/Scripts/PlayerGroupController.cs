@@ -11,53 +11,67 @@ public class PlayerGroupController : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerInputAdapter inputAdapter;
+    [SerializeField] private SoldierFormationController formationController;
 
+    [Header("Weapon")]
     [SerializeField] private int weaponLevel = 1;
     [SerializeField] private int maxWeaponLevel = 3;
 
-    [Header("Temporary HP")]
-    [SerializeField] private int maxHp = 2;
+    [Header("Soldier")]
+    [SerializeField] private int initialSoldierCount = 1;
+    [SerializeField] private int renderCap = 89;
 
-    private int currentHp;
+    private int internalCount;
     private GameManager gameManager;
 
     public int WeaponLevel => weaponLevel;
-    public int CurrentHp => currentHp;
+    public int GetCurrentSoldierCount() => internalCount;
+    public int GetRenderCount() => Mathf.Min(internalCount, renderCap);
 
-    public void UpgradeWeaponLevel()
-    {
-        int oldLevel = weaponLevel;
-        weaponLevel = Mathf.Clamp(weaponLevel + 1, 1, maxWeaponLevel);
-        Debug.Log($"[PlayerGroupController] Weapon level up: {oldLevel} -> {weaponLevel}");
-    }
-
-    public void Heal(int amount)
+    public void AddSoldiers(int amount)
     {
         if (amount <= 0) return;
-        int oldHp = currentHp;
-        currentHp = Mathf.Min(currentHp + amount, maxHp);
-        Debug.Log($"[PlayerGroupController] Healed: {oldHp} -> {currentHp}");
+        int old = internalCount;
+        internalCount += amount;
+        Debug.Log($"[PlayerGroupController] AddSoldiers: {old} -> {internalCount}");
+        OnSoldierCountChanged();
     }
 
-    public void TakeDamage(int amount)
+    public void RemoveSoldiers(int amount)
     {
         if (amount <= 0) return;
-        if (currentHp <= 0) return;
+        if (internalCount <= 0) return;
 
-        int oldHp = currentHp;
-        currentHp = Mathf.Max(0, currentHp - amount);
+        int old = internalCount;
+        internalCount = Mathf.Max(0, internalCount - amount);
+        Debug.Log($"[PlayerGroupController] RemoveSoldiers: {old} -> {internalCount}");
+        OnSoldierCountChanged();
 
-        Debug.Log($"[PlayerGroupController] Damage taken: {oldHp} -> {currentHp}");
-
-        if (currentHp <= 0)
+        if (internalCount <= 0)
         {
-            Debug.Log("[PlayerGroupController] Player group HP reached 0. GameOver.");
+            Debug.Log("[PlayerGroupController] All soldiers lost. GameOver.");
             if (gameManager != null)
             {
                 gameManager.SetGameOver();
             }
         }
     }
+
+    public void ApplyWeaponUpgrade(int levelDelta = 1)
+    {
+        int oldLevel = weaponLevel;
+        weaponLevel = Mathf.Clamp(weaponLevel + levelDelta, 1, maxWeaponLevel);
+        Debug.Log($"[PlayerGroupController] Weapon level: {oldLevel} -> {weaponLevel}");
+    }
+
+    private void OnSoldierCountChanged()
+    {
+        if (formationController != null)
+        {
+            formationController.RebuildFormation(GetRenderCount());
+        }
+    }
+
     private void Awake()
     {
         if (inputAdapter == null)
@@ -65,8 +79,13 @@ public class PlayerGroupController : MonoBehaviour
             inputAdapter = GetComponent<PlayerInputAdapter>();
         }
 
-        currentHp = maxHp;
+        internalCount = initialSoldierCount;
         gameManager = FindFirstObjectByType<GameManager>();
+    }
+
+    private void Start()
+    {
+        OnSoldierCountChanged();
     }
 
     private void Update()

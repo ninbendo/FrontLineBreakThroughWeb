@@ -60,9 +60,8 @@ public class GameUIController : MonoBehaviour
     {
         if (playerGroup == null) return;
 
-        // Day9暫定：人数=HP表示
         if (soldierCountText != null)
-            soldierCountText.text = $"HP: {playerGroup.CurrentHp}";
+            soldierCountText.text = $"Soldiers: {playerGroup.GetCurrentSoldierCount()}";
 
         // Day9暫定：武器Lvは後で接続
         if (weaponLevelText != null)

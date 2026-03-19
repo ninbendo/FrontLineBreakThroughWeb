@@ -26,7 +26,7 @@ public sealed class SpikeController : MonoBehaviour
         var playerGroup = other.GetComponentInParent<PlayerGroupController>();
         if (playerGroup != null)
         {
-            playerGroup.TakeDamage(1);
+            playerGroup.RemoveSoldiers(1);
         }
     }
 }

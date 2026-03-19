@@ -82,7 +82,7 @@ public class BarrelController : MonoBehaviour
         var playerGroup = FindPlayerGroup();
         if (playerGroup != null)
         {
-            playerGroup.UpgradeWeaponLevel();
+            playerGroup.ApplyWeaponUpgrade();
             Debug.Log("[BarrelController] Applied weapon upgrade directly on break.");
         }
         else

@@ -39,9 +39,9 @@ public sealed class GateController : MonoBehaviour
         _used = true;
 
         if (effectValue > 0)
-            pg.Heal(effectValue);
+            pg.AddSoldiers(effectValue);
         else if (effectValue < 0)
-            pg.TakeDamage(-effectValue);
+            pg.RemoveSoldiers(-effectValue);
 
         Debug.Log($"[GateController] Applied effect: {effectValue}");
         Destroy(gameObject);
