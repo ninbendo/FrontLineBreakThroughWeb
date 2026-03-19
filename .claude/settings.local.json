@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(cd *)",
-      "mcp__UnityMCP__find_gameobjects"
+      "mcp__UnityMCP__find_gameobjects",
+      "mcp__UnityMCP__read_console"
     ]
   },
   "enabledMcpjsonServers": [
