@@ -867,7 +867,7 @@ Transform:
   m_GameObject: {fileID: 774592923}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -8}
+  m_LocalPosition: {x: 0, y: 0, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -942,7 +942,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoldierFormationController
   soldierPrefab: {fileID: 5397248902630176552, guid: 400fe4600036fc943bbf4c555c609840, type: 3}
-  spacing: 1.2
+  ring1Radius: 1.5
+  ring2Radius: 3
+  ring3Radius: 5
+  ring4Radius: 8
 --- !u!1 &784119756
 GameObject:
   m_ObjectHideFlags: 0

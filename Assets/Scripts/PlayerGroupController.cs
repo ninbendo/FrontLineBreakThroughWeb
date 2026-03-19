@@ -90,6 +90,15 @@ public class PlayerGroupController : MonoBehaviour
 
     private void Update()
     {
+        // デバッグ用: Qキーで+1、Eキーで-1
+        if (UnityEngine.InputSystem.Keyboard.current != null)
+        {
+            if (UnityEngine.InputSystem.Keyboard.current.qKey.wasPressedThisFrame)
+                AddSoldiers(1);
+            if (UnityEngine.InputSystem.Keyboard.current.eKey.wasPressedThisFrame)
+                RemoveSoldiers(1);
+        }
+
         float dt = Time.deltaTime;
         Vector3 pos = transform.position;
 
