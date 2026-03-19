@@ -90,6 +90,7 @@ public class PlayerGroupController : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_EDITOR
         // デバッグ用: Qキーで+1、Eキーで-1
         if (UnityEngine.InputSystem.Keyboard.current != null)
         {
@@ -98,6 +99,7 @@ public class PlayerGroupController : MonoBehaviour
             if (UnityEngine.InputSystem.Keyboard.current.eKey.wasPressedThisFrame)
                 RemoveSoldiers(1);
         }
+#endif
 
         float dt = Time.deltaTime;
         Vector3 pos = transform.position;
