@@ -33,32 +33,39 @@ public class BulletController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // ✅ 2回目以降は無視（連動Destroy防止）
         if (_hasHit) return;
 
-        if (!other.CompareTag("Enemy")) return;
-
-        _hasHit = true;
-
-        // ✅ 追加のOnTriggerを止める（同フレーム多重呼び出し対策）
-        if (_col != null) _col.enabled = false;
-
-        // ✅ 「敵のルート（EnemyController持ち）」を確実に消す
-        var enemy = other.GetComponentInParent<EnemyController>();
-        if (enemy != null)
+        if (other.CompareTag("Enemy"))
         {
-            if (enemy.TryKill())
+            ConsumeHit();
+            var enemy = other.GetComponentInParent<EnemyController>();
+            if (enemy != null)
             {
-                ScoreManager.Add(1);
-                Destroy(enemy.gameObject);
+                if (enemy.TryKill())
+                {
+                    ScoreManager.Add(1);
+                    Destroy(enemy.gameObject);
+                }
             }
+            else
+            {
+                Destroy(other.gameObject);
+            }
+            Destroy(gameObject);
         }
-        else
+        else if (other.CompareTag("Gate"))
         {
-            // 予備：親にいない場合だけ other 自体を消す
-            Destroy(other.gameObject);
+            ConsumeHit();
+            var gate = other.GetComponentInParent<GateController>();
+            if (gate != null) gate.OnBulletHit();
+            Destroy(gameObject);
         }
+        // Barrel側がBulletタグを検出して処理するため、ここでは不要
+    }
 
-        Destroy(gameObject);
+    private void ConsumeHit()
+    {
+        _hasHit = true;
+        if (_col != null) _col.enabled = false;
     }
 }

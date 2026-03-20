@@ -188,3 +188,10 @@ PlayerGroupController
 次のステップ:
 - Day 0（03-19）: 座標系の整合性確認（Unityエディタで目視）
 - Day 1（03-19〜03-20）: 兵隊システム基盤から着手
+
+---
+
+## MVP後の改善候補（2026-03-20追記）
+
+- **GateController の `Renderer.material` 差し替え**: 値変化のたびに `material` プロパティへの代入でマテリアルインスタンスが生成される。MVP では許容範囲だが、ゲート数が増える場合は `MaterialPropertyBlock` への移行を検討する。
+- **`BulletController` に `sealed` 修飾子がない**: `GateController` 等は `sealed` を付けているが `BulletController` は未付与。継承予定がなければ統一する。
