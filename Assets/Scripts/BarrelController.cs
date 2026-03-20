@@ -1,43 +1,56 @@
 using UnityEngine;
+using TMPro;
 
 public class BarrelController : MonoBehaviour
 {
+    public enum DropType
+    {
+        WeaponUpgrade,
+        SoldierAdd
+    }
+
     [Header("Movement")]
     [SerializeField] private float speed = 2.5f;
 
     [Header("Durability")]
     [SerializeField] private int maxHp = 3;
 
-    [Header("Drop")]
-    [SerializeField] private GameObject dropPrefab;
-    [SerializeField] private Transform dropSpawnPoint;
+    [Header("Display")]
+    [SerializeField] private TMP_Text hpText;
+
+    [Header("Drop (即適用)")]
+    [SerializeField] private DropType dropType = DropType.WeaponUpgrade;
+    [SerializeField] private int soldierAddAmount = 5;
 
     private int currentHp;
-    private bool isBroken = false;
+    private bool _isBroken;
+    private bool _playerHit;
     private GameManager gameManager;
+    private PlayerGroupController playerGroup;
 
     private void Awake()
     {
         currentHp = maxHp;
         gameManager = FindFirstObjectByType<GameManager>();
+        playerGroup = FindFirstObjectByType<PlayerGroupController>();
+    }
+
+    private void Start()
+    {
+        UpdateHpDisplay();
     }
 
     private void Update()
     {
-        if (isBroken) return;
+        if (_isBroken) return;
+        if (gameManager != null && !gameManager.IsPlaying) return;
 
-        if (gameManager != null && !gameManager.IsPlaying)
-        {
-            return;
-        }
-
-        // Z-方向へ移動（奥→手前へ流れる）
         transform.position += -Vector3.forward * (speed * Time.deltaTime);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isBroken) return;
+        if (_isBroken) return;
 
         if (other.CompareTag("Bullet"))
         {
@@ -48,16 +61,16 @@ public class BarrelController : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
-            HandlePlayerHit();
-            BreakBarrel();
+            HandlePlayerContact(other);
         }
     }
 
     private void TakeDamage(int amount)
     {
-        if (isBroken) return;
+        if (_isBroken) return;
 
         currentHp -= amount;
+        UpdateHpDisplay();
         Debug.Log($"[BarrelController] Damage taken. currentHp={currentHp}");
 
         if (currentHp <= 0)
@@ -66,44 +79,58 @@ public class BarrelController : MonoBehaviour
         }
     }
 
-    private void HandlePlayerHit()
+    private void HandlePlayerContact(Collider other)
     {
-        // Day6では仮実装
-        Debug.Log("[BarrelController] Player hit barrel: decrease player count by 1");
+        if (_playerHit) return;
+        _playerHit = true;
+
+        var pg = other.GetComponentInParent<PlayerGroupController>();
+        if (pg != null)
+        {
+            pg.RemoveSoldiers(1);
+            Debug.Log("[BarrelController] Player contact: removed 1 soldier.");
+        }
     }
 
     private void BreakBarrel()
     {
-        if (isBroken) return;
-        isBroken = true;
+        if (_isBroken) return;
+        _isBroken = true;
 
-        Debug.Log("[BarrelController] Barrel broken.");
-
-        var playerGroup = FindPlayerGroup();
         if (playerGroup != null)
         {
-            playerGroup.ApplyWeaponUpgrade();
-            Debug.Log("[BarrelController] Applied weapon upgrade directly on break.");
+            ApplyDropEffect(playerGroup);
         }
         else
         {
             Debug.LogWarning("[BarrelController] PlayerGroupController not found.");
         }
 
-        if (dropPrefab != null)
-        {
-            Vector3 spawnPos = dropSpawnPoint != null
-                ? dropSpawnPoint.position
-                : transform.position;
-
-            Instantiate(dropPrefab, spawnPos, Quaternion.identity);
-        }
-
+        Debug.Log($"[BarrelController] Barrel broken. Drop: {dropType}");
         Destroy(gameObject);
     }
 
-    private PlayerGroupController FindPlayerGroup()
+    private void ApplyDropEffect(PlayerGroupController pg)
     {
-        return FindFirstObjectByType<PlayerGroupController>();
+        switch (dropType)
+        {
+            case DropType.WeaponUpgrade:
+                pg.ApplyWeaponUpgrade();
+                Debug.Log("[BarrelController] Applied weapon upgrade.");
+                break;
+            case DropType.SoldierAdd:
+                pg.AddSoldiers(soldierAddAmount);
+                Debug.Log($"[BarrelController] Added {soldierAddAmount} soldiers.");
+                break;
+        }
+    }
+
+    private void UpdateHpDisplay()
+    {
+        if (hpText != null)
+        {
+            string typeLabel = dropType == DropType.WeaponUpgrade ? "W" : "S";
+            hpText.text = $"{typeLabel}:{currentHp}";
+        }
     }
 }
