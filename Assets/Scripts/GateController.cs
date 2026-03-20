@@ -47,7 +47,6 @@ public sealed class GateController : MonoBehaviour
     /// </summary>
     public void OnBulletHit(int amount = 1)
     {
-        if (_applied) return;
         currentValue += amount;
         UpdateDisplay();
     }
