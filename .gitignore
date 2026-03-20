@@ -38,8 +38,8 @@ MemoryCaptures/
 *.opendb
 *.VC.db
 
-# Keep your .slnx if you're using it
-!*.slnx
+# slnx is IDE-generated, exclude
+*.slnx
 
 # VS Code local settings (team共有しない方が無難)
 .vscode/
@@ -48,8 +48,8 @@ MemoryCaptures/
 .idea/
 *.sln.iml
 
-# Claude Code local settings (現在1人開発のため全てgit管理。複数人開発時にsettings.local.jsonの除外を検討)
-# .claude/settings.local.json
+# Claude Code local settings
+.claude/settings.local.json
 
 # =========================
 # OS files
