@@ -26,11 +26,13 @@ public class BarrelController : MonoBehaviour
     private bool _isBroken;
     private bool _playerHit;
     private GameManager gameManager;
+    private PlayerGroupController playerGroup;
 
     private void Awake()
     {
         currentHp = maxHp;
         gameManager = FindFirstObjectByType<GameManager>();
+        playerGroup = FindFirstObjectByType<PlayerGroupController>();
     }
 
     private void Start()
@@ -95,10 +97,9 @@ public class BarrelController : MonoBehaviour
         if (_isBroken) return;
         _isBroken = true;
 
-        var pg = FindFirstObjectByType<PlayerGroupController>();
-        if (pg != null)
+        if (playerGroup != null)
         {
-            ApplyDropEffect(pg);
+            ApplyDropEffect(playerGroup);
         }
         else
         {
