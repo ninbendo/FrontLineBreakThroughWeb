@@ -70,8 +70,8 @@ public class PlayerGroupController : MonoBehaviour
             target.TakeDamage(1);
             if (!target.IsAlive())
             {
-                RemoveSoldiers(1);
                 formationController.RemoveDeadSoldier(target);
+                RemoveSoldiers(1);
             }
         }
     }
