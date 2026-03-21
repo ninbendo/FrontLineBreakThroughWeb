@@ -44,6 +44,13 @@ public class GameUIController : MonoBehaviour
         RefreshRemain();
     }
 
+    public void ShowClear()
+    {
+        if (resultPanel != null) resultPanel.SetActive(true);
+        if (resultText != null) resultText.text = "CLEAR!";
+        RefreshRemain();
+    }
+
     public void HideResult()
     {
         if (resultPanel != null) resultPanel.SetActive(false);
@@ -70,8 +77,8 @@ public class GameUIController : MonoBehaviour
 
     private void RefreshRemain()
     {
-        if (remainCountText == null) return;
-        remainCountText.text = "Remain: ?";
+        if (remainCountText == null || playerGroup == null) return;
+        remainCountText.text = $"Remain: {playerGroup.GetCurrentSoldierCount()}";
     }
 
     private void RefreshSoundLabel()

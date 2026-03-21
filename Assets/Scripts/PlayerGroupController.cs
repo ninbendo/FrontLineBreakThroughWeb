@@ -57,6 +57,25 @@ public class PlayerGroupController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// トゲ接触用: 外周の兵士1体にダメージを与える。HP=0で死亡→人数減少。
+    /// </summary>
+    public void DamageOneSoldier()
+    {
+        if (formationController == null) return;
+
+        var target = formationController.FindDamageTarget();
+        if (target != null)
+        {
+            target.TakeDamage(1);
+            if (!target.IsAlive())
+            {
+                formationController.RemoveDeadSoldier(target);
+                RemoveSoldiers(1);
+            }
+        }
+    }
+
     public void ApplyWeaponUpgrade(int levelDelta = 1)
     {
         int oldLevel = weaponLevel;

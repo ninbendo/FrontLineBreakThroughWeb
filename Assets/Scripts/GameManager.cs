@@ -54,6 +54,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void SetClear()
+    {
+        if (currentState != GameState.Playing) return;
+
+        currentState = GameState.Clear;
+        Debug.Log("[GameManager] State -> Clear");
+
+        if (gameUIController != null)
+        {
+            gameUIController.ShowClear();
+        }
+    }
+
     public void OnClickRetry()
     {
         Retry();
