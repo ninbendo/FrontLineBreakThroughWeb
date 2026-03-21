@@ -44,6 +44,13 @@ public class GameUIController : MonoBehaviour
         RefreshRemain();
     }
 
+    public void ShowClear()
+    {
+        if (resultPanel != null) resultPanel.SetActive(true);
+        if (resultText != null) resultText.text = "CLEAR!";
+        RefreshRemain();
+    }
+
     public void HideResult()
     {
         if (resultPanel != null) resultPanel.SetActive(false);

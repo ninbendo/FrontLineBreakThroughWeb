@@ -60,6 +60,40 @@ public class SoldierFormationController : MonoBehaviour
     }
 
     /// <summary>
+    /// ダメージ対象の兵士を探す（外周優先、被弾済み→未被弾の順）
+    /// </summary>
+    public SoldierUnit FindDamageTarget()
+    {
+        // 外周から探索（リストの末尾が外周）
+        // まず被弾済み（HP < maxHP）を優先（2回目で倒しきる）
+        for (int i = _soldiers.Count - 1; i >= 0; i--)
+        {
+            if (_soldiers[i] != null && _soldiers[i].IsAlive() && _soldiers[i].CurrentHp < 2)
+                return _soldiers[i];
+        }
+        // 次に未被弾
+        for (int i = _soldiers.Count - 1; i >= 0; i--)
+        {
+            if (_soldiers[i] != null && _soldiers[i].IsAlive())
+                return _soldiers[i];
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 死亡した兵士をリストから除去してGameObjectを破棄する
+    /// </summary>
+    public void RemoveDeadSoldier(SoldierUnit soldier)
+    {
+        _soldiers.Remove(soldier);
+        if (soldier != null)
+        {
+            Destroy(soldier.gameObject);
+        }
+        ArrangePositions();
+    }
+
+    /// <summary>
     /// v2: リング配置（中心+4リング: 6/12/20/50、時計回り）
     /// </summary>
     private void ArrangePositions()

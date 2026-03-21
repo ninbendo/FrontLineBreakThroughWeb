@@ -11,22 +11,14 @@ public sealed class SpikeController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (gameManager == null || !gameManager.IsPlaying)
-        {
-            return;
-        }
-
-        if (!other.CompareTag("Player"))
-        {
-            return;
-        }
-
-        Debug.Log("[SpikeController] Player hit Spike");
+        if (gameManager == null || !gameManager.IsPlaying) return;
+        if (!other.CompareTag("Player")) return;
 
         var playerGroup = other.GetComponentInParent<PlayerGroupController>();
         if (playerGroup != null)
         {
-            playerGroup.RemoveSoldiers(1);
+            playerGroup.DamageOneSoldier();
+            Debug.Log("[SpikeController] Damaged one soldier.");
         }
     }
 }
