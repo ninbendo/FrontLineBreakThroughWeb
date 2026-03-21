@@ -77,8 +77,8 @@ public class GameUIController : MonoBehaviour
 
     private void RefreshRemain()
     {
-        if (remainCountText == null) return;
-        remainCountText.text = "Remain: ?";
+        if (remainCountText == null || playerGroup == null) return;
+        remainCountText.text = $"Remain: {playerGroup.GetCurrentSoldierCount()}";
     }
 
     private void RefreshSoundLabel()

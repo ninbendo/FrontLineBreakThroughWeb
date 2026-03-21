@@ -195,3 +195,5 @@ PlayerGroupController
 
 - **GateController の `Renderer.material` 差し替え**: 値変化のたびに `material` プロパティへの代入でマテリアルインスタンスが生成される。MVP では許容範囲だが、ゲート数が増える場合は `MaterialPropertyBlock` への移行を検討する。
 - **`BulletController` に `sealed` 修飾子がない**: `GateController` 等は `sealed` を付けているが `BulletController` は未付与。継承予定がなければ統一する。
+- **SoldierUnit 被弾演出の点滅化**: MVP では赤色持続のみ。仕様（設計書8-4）では「色変更・点滅」とあるため、MVP後に点滅アニメーションを追加する。
+- **トゲ接触の接触位置優先**: MVP では外周優先フォールバック。本家準拠の「接触位置に最も近い兵士にダメージ」は個別Collider導入後に検討。

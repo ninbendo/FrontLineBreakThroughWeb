@@ -24,6 +24,7 @@ public sealed class GoalController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (_reached) return;
+        if (gameManager != null && !gameManager.IsPlaying) return;
         if (!other.CompareTag("Player")) return;
 
         _reached = true;

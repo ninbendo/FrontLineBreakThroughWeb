@@ -65,10 +65,10 @@ public class SoldierFormationController : MonoBehaviour
     public SoldierUnit FindDamageTarget()
     {
         // 外周から探索（リストの末尾が外周）
-        // まず被弾済み（HP < maxHP）を優先（2回目で倒しきる）
+        // まず被弾済みを優先（2回目で倒しきる）
         for (int i = _soldiers.Count - 1; i >= 0; i--)
         {
-            if (_soldiers[i] != null && _soldiers[i].IsAlive() && _soldiers[i].CurrentHp < 2)
+            if (_soldiers[i] != null && _soldiers[i].IsDamaged)
                 return _soldiers[i];
         }
         // 次に未被弾
